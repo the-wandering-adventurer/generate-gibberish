@@ -1,14 +1,16 @@
+#!/usr/bin/env python3
 from collections import defaultdict
 from itertools import accumulate
 import base64
 import gzip
 import json
 import re
+import sys
 
-with open("/usr/share/dict/words") as f:
+with open(sys.argv[1]) as f:
     words = f.read().splitlines()
 
-words = [w for w in words if re.match(r"[a-z]+$", w)]
+words = [w for w in words if re.match(r"^\w+$", w) and w.islower()]
 
 one_char_words = [w for w in words if len(w) == 1]
 two_char_words = [w for w in words if len(w) == 2]
