@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from collections import defaultdict
 from itertools import accumulate
-import base64
 import gzip
 import json
 import re
@@ -10,33 +9,36 @@ import sys
 with open(sys.argv[1]) as f:
     words = f.read().splitlines()
 
-words = [w for w in words if re.match(r"^\w+$", w) and w.islower()]
+# Filter out:
+# (1) Words w/ non-alpha characters (like ')
+# (2) Words that have capital letters (they are likely names)
+# (3) One/Two character words (these tend to be junk in many dictionaries I've used)
 
-one_char_words = [w for w in words if len(w) == 1]
-two_char_words = [w for w in words if len(w) == 2]
-start_chars = []
+words = [w for w in words if re.match(r"^\w+$", w) and w.islower() and len(w) > 2]
+
+start_chars = defaultdict(int)
 model = defaultdict(lambda: defaultdict(int))
 
-for word in [w for w in words if len(w) > 2]:
+for word in words:
     prev = word[0:2]
-    start_chars.append(prev)
+    start_chars[prev] += 1
     for c in word[2:]:
         model[prev][c] += 1
         prev = prev[1] + c
+    model[prev]["."] += 1
 
 for prev in model.keys():
     model[prev] = dict(
         accumulate(model[prev].items(), lambda a, b: (b[0], a[1] + b[1]))
     )
 
-json = json.dumps(
-    dict(
-        one_char_words=one_char_words,
-        two_char_words=two_char_words,
-        start_chars=start_chars,
-        states=model,
-    )
-)
-model_encoded = base64.b64encode(gzip.compress(json.encode()))
+start_chars = dict(accumulate(start_chars.items(), lambda a, b: (b[0], a[1] + b[1])))
 
-print(model_encoded.decode())
+with gzip.open(sys.argv[2], "wt") as f:
+    json.dump(
+        dict(
+            start_chars=start_chars,
+            states=model,
+        ),
+        f,
+    )
