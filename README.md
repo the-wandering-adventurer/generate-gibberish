@@ -64,7 +64,7 @@ Swedish? Go for it!
 $ aspell -l da dump master | aspell -l da expand > dafrsv.txt
 $ aspell -l fr dump master | aspell -l fr expand >> dafrsv.txt
 $ aspell -l sv dump master | aspell -l sv expand >> dafrsv.txt
-$ ./gen-gibberish.py dafrsv.gz 
+$ ./gen-model.py dafrsv.txt dafrsv.gz 
 $ ./gen-gibberish.py dafrsv.gz 
 apprépropruriversions enterolfinradik färdener barde bedspréchisemekref tningerirent
 ```
