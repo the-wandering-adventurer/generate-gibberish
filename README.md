@@ -30,7 +30,7 @@ $ ./gen-gibberish.py words.gz
 
 ## How Does It Work?
 
-Most examples of Markov chains uses words as their atoms in order to generate
+Most examples of Markov chains use words as their atoms in order to generate
 phrases or sentence. In my case, I wanted to generate the words themselves.
 `gen-model.py` goes through each word in the dictionary, character by character,
 in order to generate the Markov chain for generating words. It saves that model
