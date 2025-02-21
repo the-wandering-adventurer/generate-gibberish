@@ -66,9 +66,9 @@ Do you want to generate gibberish based off words from Danish, French and
 Swedish? Go for it!
 
 ```console
-$ aspell -l da dump master | aspell -l da expand > dafrsv.txt
-$ aspell -l fr dump master | aspell -l fr expand >> dafrsv.txt
-$ aspell -l sv dump master | aspell -l sv expand >> dafrsv.txt
+$ aspell -l da dump master | aspell -l da expand | sed 's/ /\n/g' > dafrsv.txt
+$ aspell -l fr dump master | aspell -l fr expand | sed 's/ /\n/g' >> dafrsv.txt
+$ aspell -l sv dump master | aspell -l sv expand | sed 's/ /\n/g' >> dafrsv.txt
 $ ./gen-model.py dafrsv.txt dafrsv.gz 
 $ ./gen-gibberish.py dafrsv.gz 
 apprépropruriversions enterolfinradik färdener barde bedspréchisemekref tningerirent
