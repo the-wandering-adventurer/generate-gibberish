@@ -19,13 +19,13 @@ other undesirable words. Use them with care.**
 First generate the model:
 
 ```sh
-$ ./gen-model.py /usr/share/dict/words words.gz
+./gen-model.py /usr/share/dict/words words.gz
 ```
 
 Then use the model to generate a gibberish phrase
 
 ```sh
-$ ./gen-gibberish.py words.gz
+./gen-gibberish.py words.gz
 ```
 
 ## How Does It Work?
@@ -48,7 +48,12 @@ chain:
 ```sh
 # Dump the Latin dictionary to a text file
 $ aspell -l la dump master | aspell -l la expand | sed 's/ /\n/g' > la.txt
+```
 
+With the latin dictionary saved to a file, you can now generate a model from it
+and then generate latin-esque gibberish words:
+
+```console
 # Generate the model
 $ ./gen-model.py la.txt la.gz
 
@@ -60,7 +65,7 @@ defant pretilique alibinue didentaviviti
 Do you want to generate gibberish based off words from Danish, French and
 Swedish? Go for it!
 
-```sh
+```console
 $ aspell -l da dump master | aspell -l da expand > dafrsv.txt
 $ aspell -l fr dump master | aspell -l fr expand >> dafrsv.txt
 $ aspell -l sv dump master | aspell -l sv expand >> dafrsv.txt
