@@ -47,7 +47,7 @@ chain:
 
 ```sh
 # Dump the Latin dictionary to a text file
-$ aspell -l la dump master | aspell -l la expand | sed 's/ /\n/g' > la.txt
+aspell -l la dump master | aspell -l la expand | sed 's/ /\n/g' > la.txt
 ```
 
 With the latin dictionary saved to a file, you can now generate a model from it
