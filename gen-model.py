@@ -12,9 +12,8 @@ with open(sys.argv[1]) as f:
 # Filter out:
 # (1) Words w/ non-alpha characters (like ')
 # (2) Words that have capital letters (they are likely names)
-# (3) One/Two character words (these tend to be junk in many dictionaries I've used)
 
-words = [w for w in words if re.match(r"^\w+$", w) and w.islower() and len(w) > 2]
+words = [w for w in words if re.match(r"^\w+$", w) and w.islower()]
 
 # We are going to keep track of
 #
@@ -33,8 +32,10 @@ words = [w for w in words if re.match(r"^\w+$", w) and w.islower() and len(w) > 
 start_chars = defaultdict(int)
 model = defaultdict(lambda: defaultdict(int))
 
+one_chars = [w for w in words if len(w) == 1]
+
 # Go through each word in the dictionary to develop the model
-for word in words:
+for word in (w for w in words if len(w) > 1):
     # The first two chars of the word form our starting point
     context = word[0:2]
 
@@ -66,6 +67,7 @@ start_chars = dict(accumulate(start_chars.items(), lambda a, b: (b[0], a[1] + b[
 with gzip.open(sys.argv[2], "wt") as f:
     json.dump(
         dict(
+            one_chars=one_chars,
             start_chars=start_chars,
             states=model,
         ),
