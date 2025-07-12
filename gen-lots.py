@@ -63,44 +63,49 @@ for _ in range(0, 10000):
 
 word_length[1] = one_chars
 
-#for (wlen, wlist) in sorted(word_length.items()):
+# for (wlen, wlist) in sorted(word_length.items()):
 #    print(f'{wlen}: {len(wlist)}')
 
+
 def key(a, b):
-    return f'{a},{b}'
+    return f"{a}:{b}"
+
 
 def unkey(key):
-    return tuple(int(x) for x in key.split(","))
+    return tuple(int(x) if x not in ",." else x for x in key.split(":"))
+
+
+def add_word(length):
+    if isinstance(length, str):
+        sentence.append(length)
+    else:
+        sentence.append(random.choice(word_length[length]))
+
 
 sentence = []
 
 start = random.choices(
-    list(sentence_start_lens.keys()),
-    cum_weights=list(sentence_start_lens.values())
+    list(sentence_start_lens.keys()), cum_weights=list(sentence_start_lens.values())
 )
 start = start[0]
 
-#print(f'start={start}')
+# print(f'start={start}')
 
 len1, len2 = unkey(start)
-sentence.append(random.choice(word_length[len1]))
-sentence.append(random.choice(word_length[len2]))
-#print(sentence)
+add_word(len1)
+add_word(len2)
 
-while True:
+while len2 != ".":
     len3 = random.choices(
         list(sentence_states[key(len1, len2)].keys()),
-        list(sentence_states[key(len1, len2)].values())
+        list(sentence_states[key(len1, len2)].values()),
     )
     len3 = len3[0]
-    if len3 == ".":
-        break
-    len3 = int(len3)
-    word = random.choice(word_length[len3])
-    sentence.append(word)
+    len3 = int(len3) if len3 not in ",." else len3
+    add_word(len3)
     len1, len2 = len2, len3
 
-#for _ in range(0, num_words):
+# for _ in range(0, num_words):
 #    while True:
 #        try:
 #            num_c = random.randint(0,4) + random.randint(0,4) + 2
@@ -108,10 +113,8 @@ while True:
 #            break
 #        except IndexError:
 #            pass
-    
+
 
 sentence[0] = sentence[0].capitalize()
-
-sentence[-1] = sentence[-1] + "."
 
 print(" ".join(sentence))

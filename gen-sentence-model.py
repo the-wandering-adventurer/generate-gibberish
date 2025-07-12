@@ -9,20 +9,21 @@ import sys
 with open(sys.argv[1]) as f:
     lines = f.read().splitlines()
 
-words = [re.sub(r"[^\w.]", "", w) for l in lines for w in l.split()]
-words = [w for w in words if len(w) > 0]
+words = []
+for l in lines:
+    for w in filter(lambda x: x, re.split(r" +|([.,])", l)):
+        words.append(re.sub(r"[^\w.,]", "", w))
 
 start_lens = defaultdict(int)
 model = defaultdict(lambda: defaultdict(int))
 
-# print(words)
 
 sentence_id = 1
 
 
 def break_sentence(word):
     global sentence_id
-    if word[-1] == ".":
+    if word == ".":
         old = sentence_id
         sentence_id += 1
         return old
@@ -30,23 +31,29 @@ def break_sentence(word):
         return sentence_id
 
 
-def key(a, b):
-    return f"{a},{b}"
+def key2(a, b):
+    ka = a if a in ",." else len(a)
+    kb = b if b in ",." else len(b)
+    return f"{ka}:{kb}"
+
+
+def key(a):
+    ka = a if a in ",." else len(a)
+    return f"{ka}"
 
 
 for _, sentence_iter in groupby(words, break_sentence):
     sentence = list(sentence_iter)
     if len(sentence) <= 1:
         continue
-    len1, len2 = tuple(len(w) for w in sentence[0:2])
-    start_lens[key(len1, len2)] += 1
+    word1, word2 = sentence[0:2]
+    if word1 in ",.":
+        print(sentence)
+        sys.exit(1)
+    start_lens[key2(word1, word2)] += 1
     for word in sentence[2:]:
-        len3 = len(word)
-        if word[-1] == ".":
-            len3 -= 1
-        model[key(len1, len2)][len3] += 1
-        len1, len2 = len2, len3
-    model[key(len1, len2)]["."] += 1
+        model[key2(word1, word2)][key(word)] += 1
+        word1, word2 = word2, word
 
 
 for context in model.keys():
