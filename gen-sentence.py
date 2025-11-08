@@ -53,7 +53,8 @@ def gen_word():
     return word
 
 
-# Generate some random words
+# Generate some random words for our sentence
+# Store the words by word length
 
 word_length = defaultdict(list)
 
@@ -63,25 +64,30 @@ for _ in range(0, 10000):
 
 word_length[1] = one_chars
 
-# for (wlen, wlist) in sorted(word_length.items()):
-#    print(f'{wlen}: {len(wlist)}')
 
-
+# The key two our sentence model relies
+# on the length of the last two words
 def key(a, b):
     return f"{a}:{b}"
 
 
+# Revert a key in our sentence model
+# to the two word lengths, or the special
+# punctuation markers of "," and "."
 def unkey(key):
     return tuple(int(x) if x not in ",." else x for x in key.split(":"))
 
 
+# Add a word to our sentence. If "length" is
+# a string, that means it's punctuation, so just append it.
+# Otherwise pick a word from our pre-generated list of words.
 def add_word(length):
     if isinstance(length, str):
         sentence.append(length)
     else:
         sentence.append(random.choice(word_length[length]))
 
-
+# Start our sentence, by getting starting word lengths
 sentence = []
 
 start = random.choices(
@@ -89,13 +95,15 @@ start = random.choices(
 )
 start = start[0]
 
-# print(f'start={start}')
-
+# Generate the first two random words
 len1, len2 = unkey(start)
 add_word(len1)
 add_word(len2)
 
+# While we haven't encountered a period (ending our sentence),
+#   keep adding new words
 while len2 != ".":
+    # Decide on the length of the next word
     len3 = random.choices(
         list(sentence_states[key(len1, len2)].keys()),
         list(sentence_states[key(len1, len2)].values()),
@@ -117,4 +125,4 @@ while len2 != ".":
 
 sentence[0] = sentence[0].capitalize()
 
-print(" ".join(sentence))
+print(" ".join(sentence).replace(" ,", ",").replace(" .", "."))
